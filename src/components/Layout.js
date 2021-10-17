@@ -9,10 +9,12 @@ import {
   makeStyles,
   Toolbar,
   Typography,
+  Button,
 } from "@material-ui/core";
 import {
   BookOutlined,
   CodeOutlined,
+  MenuOutlined,
   SubjectOutlined,
 } from "@material-ui/icons";
 import { useHistory, useLocation } from "react-router-dom";
@@ -43,7 +45,7 @@ const useStyle = makeStyles((theme) => {
       padding: theme.spacing(2),
     },
     appbar: {
-      width: `calc(100% - ${drawerWidth}px)`,
+      width: "100%",
     },
     toolbar: theme.mixins.toolbar,
     date: {
@@ -55,7 +57,14 @@ const useStyle = makeStyles((theme) => {
   };
 });
 
+//TODO:把側邊攔改為RWD 電腦出現手機隱藏
 function Layout({ children }) {
+  //控制商品抽屜開啟
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  //控制商品抽屜開啟
+  const toggleDrawer = (open) => (event) => {
+    setDrawerOpen(open);
+  };
   const History = useHistory();
   const classes = useStyle();
   const location = useLocation();
@@ -82,15 +91,23 @@ function Layout({ children }) {
       {/*appbar */}
       <AppBar elevation={0} className={classes.appbar}>
         <Toolbar>
-          <Avatar className={classes.avatar}></Avatar>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={toggleDrawer(true)}
+          ><MenuOutlined /></Button>
+          <Typography variant="h5" className={classes.title}>
+            阿瑞的個人網站
+          </Typography>
         </Toolbar>
       </AppBar>
       {/*side draw*/}
+
       <Drawer
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
         className={classes.drawer}
-        variant="permanent"
         anchor="left"
-        classes={{ paper: classes.drawerPaper }}
       >
         <div>
           <Typography variant="h5" className={classes.title}>
@@ -104,7 +121,10 @@ function Layout({ children }) {
               key={item.text}
               button
               className={location.pathname == item.path ? classes.active : null}
-              onClick={() => History.push(item.path)}
+              onClick={() => {
+                History.push(item.path);
+                setDrawerOpen(false);
+              }}
             >
               <ListItemIcon>{item.Icon}</ListItemIcon>
               <ListItemText primary={item.text} />
